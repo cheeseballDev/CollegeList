@@ -7,25 +7,26 @@ public class CollegeList implements Runnable {
     public void promptUser() {
         clearScreen();
         Scanner userInput = new Scanner(System.in);
-        System.out.print("Press E for Employee, F for Faculty, or S for Student: ");
-        try {
-            char userChoice = userInput.nextLine().toUpperCase().trim().charAt(0);
-            checkUserType(userChoice, userInput);
-        } catch (Exception e) {
-            System.out.println("Invalid characters! Please try again!");
-            promptUser();
+        while (true) {
+            System.out.print("Press E for Employee, F for Faculty, or S for Student: ");
+            try {
+                String userChoice = userInput.nextLine().toUpperCase().trim();
+                checkUserType(userChoice, userInput);
+            } catch (Exception e) {
+                System.out.println("Invalid characters! Please try again!");
+            }
         }
     }
 
-    private void checkUserType(char userChoice, Scanner userInput) {
+    private void checkUserType(String userChoice, Scanner userInput) {
         switch(userChoice) {
-            case 'E':
+            case "E":
                 getEmployeeInformation(userInput);
                 break;
-            case 'F':
+            case "F":
                 getFacultyType(userInput);
                 break;
-            case 'S':
+            case "S":
                 getStudentInformation(userInput);
                 break;
             default: 
@@ -34,7 +35,12 @@ public class CollegeList implements Runnable {
         }
     }
 
+    /*
+     * Faculty
+     */
+
     private void printFacultyInformation(Scanner userInput, Faculty facultyObject) {
+            System.out.println("----------------------------------------");
             System.out.println("Name: " + facultyObject.getName());
             System.out.println("Contact Number: " + facultyObject.getContactNum());
             System.out.println("Salary: " + facultyObject.getSalary());
@@ -73,62 +79,87 @@ public class CollegeList implements Runnable {
                 System.out.println("Press Enter after every input.");
                 facultyObject.setName(userInput.nextLine());
                 facultyObject.setContactNum(userInput.nextLine());
-                facultyObject.setSalary(userInput.nextDouble());
-                facultyObject.setDepartment(userInput.next());
+                facultyObject.setSalary(Double.parseDouble(userInput.nextLine()));
+                facultyObject.setDepartment(userInput.nextLine());
                 printFacultyInformation(userInput, facultyObject);
+                if (facultyObject.getName() == "" || facultyObject.getContactNum() == "" || facultyObject.getDepartment() == "") {
+                    printErrorEmptyValues();
+                    continue;
+                }
+                break;
             } catch (Exception e) {
                 printErrorInvalidInput();
-                continue;
             }
         }
     }
 
-    private void printEmployeeInformation(Scanner userInput) {
-        Employee employeeObject = new Employee();
-        getEmployeeInformation(userInput, employeeObject);
+    /*
+     * Employee
+     */
+
+    private void printEmployeeInformation(Employee employeeObject) {
+        System.out.println("----------------------------------------");
         System.out.println("Name: " + employeeObject.getName());
         System.out.println("Contact Number: " + employeeObject.getContactNum());
         System.out.println("Salary: " + employeeObject.getSalary());
         System.out.println("Department: " + employeeObject.getDepartment());
     }
 
-    private void getEmployeeInformation(Scanner userInput, Employee employeeObject) { 
+    private void getEmployeeInformation(Scanner userInput) { 
+        Employee employeeObject = new Employee();
         while (true){
             try {
                 System.out.println("Type employee's name, contact number, salary, and department.");
                 System.out.println("Press Enter after every input.");
                 employeeObject.setName(userInput.nextLine());
                 employeeObject.setContactNum(userInput.nextLine());
-                employeeObject.setSalary(userInput.nextDouble());
-                employeeObject.setDepartment(userInput.next());
+                employeeObject.setSalary(Double.parseDouble(userInput.nextLine()));
+                employeeObject.setDepartment(userInput.nextLine());
+                if (employeeObject.getName() == "" || employeeObject.getContactNum() == "" || employeeObject.getDepartment() == "") {
+                    printErrorEmptyValues();
+                    continue;
+                }
+                break;
             } catch (Exception e) {
                 printErrorInvalidInput();
-                continue;
             }
         }
-        
+        printEmployeeInformation(employeeObject);
     }
 
+    /*
+     * Student
+     */
 
-
-    private void promptStudent(Scanner userInput) {
-        System.out.println("Type student's name, contact number, enrolled program, and year level.");
-        System.out.println("Press Enter after every input.");
+    private void getStudentInformation(Scanner userInput) {
         Student studentObject = new Student();
+        while (true) {
+            try {
+                System.out.println("Type student's name, contact number, enrolled program, and year level.");
+                System.out.println("Press Enter after every input.");
+                studentObject.setName(userInput.nextLine().trim());
+                studentObject.setContactNum(userInput.nextLine().trim());
+                studentObject.setProgram(userInput.nextLine().trim());
+                studentObject.setYearLevel(Integer.parseInt(userInput.nextLine().trim()));
+                if (studentObject.getName() == "" || studentObject.getContactNum() == "" || studentObject.getProgram() == "") {
+                    printErrorEmptyValues();
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                printErrorInvalidInput();
+            }
+        }
+        printStudentInformation(studentObject);
+    }
 
-
-        studentObject.setName(userInput.nextLine());
-        studentObject.setContactNum(userInput.nextLine());
-        studentObject.setProgram(userInput.nextLine());
-        studentObject.setYearLevel(userInput.nextInt());
-
-
+    private void printStudentInformation(Student studentObject) {
+        System.out.println("----------------------------------------");
         System.out.println("Name: " + studentObject.getName());
         System.out.println("Contact Number: " + studentObject.getContactNum());
         System.out.println("Enrolled Program: " + studentObject.getProgram());
-        System.out.println("Year level: " + studentObject.getYearLevel());
+        System.out.println("Year Level: " + studentObject.getYearLevel());
     }
-
     /*
      * EXTERNAL METHODS
      */
@@ -143,6 +174,7 @@ public class CollegeList implements Runnable {
             System.out.print(characters[i]);
             pause(300);
         }
+        clearScreen();
     }
 
     void printErrorInvalidUserType() {
@@ -154,6 +186,7 @@ public class CollegeList implements Runnable {
             System.out.print(characters[i]);
             pause(300);
         }
+        clearScreen();
     }
 
     void printErrorInvalidFacultyType() {
@@ -165,6 +198,19 @@ public class CollegeList implements Runnable {
             System.out.print(characters[i]);
             pause(300);
         }
+        clearScreen();
+    }
+
+    void printErrorEmptyValues() {
+        clearScreen();
+        System.out.print("Empty value(s) detected. Please try again.");
+        char[] characters = {'.', ' ', '.', ' ', '.', ' ', '.'};
+
+        for(int i = 0; i < characters.length; i++) {
+            System.out.print(characters[i]);
+            pause(300);
+        }
+        clearScreen();
     }
 
     @Override
